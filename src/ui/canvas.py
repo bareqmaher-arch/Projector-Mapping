@@ -400,7 +400,7 @@ class ProjectionCanvas(QOpenGLWidget):
                 # Snapping Logic
                 if self.snapping_enabled:
                     snapped_pos = self.snap_to_closest_point(x, y, target)
-                    if snapped_pos:
+                    if snapped_pos is not None:
                         x, y = snapped_pos
                 
                 target.mesh_points[r, c] = [x, y]
