@@ -2,8 +2,8 @@ from PyQt6.QtWidgets import (QMainWindow, QDockWidget, QWidget,
                              QSplitter, QStatusBar, QToolBar, QMenu,
                              QFileDialog, QMessageBox, QTabWidget, QVBoxLayout,
                              QInputDialog, QApplication, QLabel)
-from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QAction, QIcon, QGuiApplication, QDesktopServices, QUrl
+from PyQt6.QtCore import Qt, QTimer, QUrl
+from PyQt6.QtGui import QAction, QIcon, QGuiApplication, QDesktopServices
 import json
 
 from ui.canvas import ProjectionCanvas
