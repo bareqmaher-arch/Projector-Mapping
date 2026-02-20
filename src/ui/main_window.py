@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import (QMainWindow, QDockWidget, QWidget, 
                              QSplitter, QStatusBar, QToolBar, QMenu,
                              QFileDialog, QMessageBox, QTabWidget, QVBoxLayout,
-                             QInputDialog, QApplication)
+                             QInputDialog, QApplication, QLabel)
 from PyQt6.QtCore import Qt, QTimer
-from PyQt6.QtGui import QAction, QIcon, QGuiApplication
+from PyQt6.QtGui import QAction, QIcon, QGuiApplication, QDesktopServices, QUrl
 import json
 
 from ui.canvas import ProjectionCanvas
@@ -51,6 +51,14 @@ class MainWindow(QMainWindow):
         # 4. Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+        
+        # Add credits to status bar
+        self.credits_label = QLabel()
+        self.credits_label.setText('<a href="https://github.com/bareqmaher-arch">Developed By: Bareq Maher</a>')
+        self.credits_label.setOpenExternalLinks(True)
+        self.credits_label.setStyleSheet("QLabel { color: #888; padding-right: 10px; }")
+        self.status_bar.addPermanentWidget(self.credits_label)
+        
         self.status_bar.showMessage("Ready")
 
     def create_docks(self):
