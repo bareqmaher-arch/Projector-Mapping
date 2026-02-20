@@ -1,0 +1,5 @@
+PyQt6>=6.6.0
+PyOpenGL>=3.1.7
+numpy>=1.26.0
+opencv-python-headless>=4.9.0.80
+Pillow>=10.2.0
