@@ -155,6 +155,15 @@ class MainWindow(QMainWindow):
         output_action = QAction("Output", self)
         output_action.triggered.connect(self.toggle_output)
         toolbar.addAction(output_action)
+        
+        toolbar.addSeparator()
+        
+        # Snapping Toggle
+        self.snap_action = QAction("Magnet/Snap", self)
+        self.snap_action.setCheckable(True)
+        self.snap_action.setChecked(False)
+        self.snap_action.toggled.connect(self.toggle_snapping)
+        toolbar.addAction(self.snap_action)
 
     # --- Game Loop ---
     def update_loop(self):
@@ -370,6 +379,10 @@ class MainWindow(QMainWindow):
             self.output_window = OutputWindow(self.canvas.layers, target_screen)
             self.output_window.show()
             self.status_bar.showMessage(f"Outputting to {target_screen.name()}")
+
+    def toggle_snapping(self, checked):
+        self.canvas.snapping_enabled = checked
+        self.status_bar.showMessage(f"Snapping {'Enabled' if checked else 'Disabled'}")
 
     def on_layer_selected_in_panel(self, item):
         name = item.text()

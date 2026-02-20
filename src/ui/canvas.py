@@ -15,9 +15,11 @@ class ProjectionCanvas(QOpenGLWidget):
         self.selected_layer = None
         self.dragged_corner_index = -1
         self.dragged_mask_index = None
+        self.active_edit_layer = None
         
-        # We no longer use an internal timer for animation loop
-        # The main window will drive the updates
+        # Snapping
+        self.snapping_enabled = False
+        self.snap_threshold = 15.0 # pixels
 
     def initializeGL(self):
         gl.glClearColor(0.0, 0.0, 0.0, 1.0) # Black background for projection
@@ -376,23 +378,34 @@ class ProjectionCanvas(QOpenGLWidget):
         self.update()
 
     def mouseMoveEvent(self, event):
+        x = event.position().x()
+        y = event.position().y()
+        
         if self.selected_layer:
-            x, y = event.position().x(), event.position().y()
+            # Check for dragging logic
+            target = self.active_edit_layer if self.active_edit_layer else self.selected_layer
             
-            target = getattr(self, 'active_edit_layer', self.selected_layer)
-            if target is None: target = self.selected_layer
-
+            # Mask dragging
             if self.dragged_mask_index:
                 m_idx, p_idx = self.dragged_mask_index
+                # TODO: Add snapping for masks too? For now just points.
                 target.masks[m_idx][p_idx] = [x, y]
                 self.update()
                 return
-            
+
+            # Mesh point dragging
             if self.dragged_corner_index != -1:
                 r, c = self.dragged_corner_index
+                
+                # Snapping Logic
+                if self.snapping_enabled:
+                    snapped_pos = self.snap_to_closest_point(x, y, target)
+                    if snapped_pos:
+                        x, y = snapped_pos
+                
                 target.mesh_points[r, c] = [x, y]
                 
-                # Update dest_corners for legacy/bounds if it's a corner
+                # Update dest_corners if it's a corner (legacy compatibility)
                 if r == 0 and c == 0:
                     target.dest_corners[0] = [x, y]
                 elif r == 0 and c == target.grid_cols - 1:
@@ -403,6 +416,48 @@ class ProjectionCanvas(QOpenGLWidget):
                     target.dest_corners[3] = [x, y]
                     
                 self.update()
+                return
+        
+        # If no dragging, maybe hover effects?
+        # super().mouseMoveEvent(event)
+
+    def snap_to_closest_point(self, x, y, current_layer):
+        best_dist = self.snap_threshold
+        best_pos = None
+        
+        # Iterate all visible layers to find snap targets
+        # Flatten structure if needed
+        all_layers = []
+        
+        def collect_layers(layers_list):
+            for l in layers_list:
+                if l.visible:
+                    all_layers.append(l)
+                    if l.children:
+                        collect_layers(l.children)
+                        
+        collect_layers(self.layers)
+        
+        for layer in all_layers:
+            # Skip self (current layer being edited) to avoid self-snapping if undesired,
+            # but user might want to snap to other points on same mesh?
+            # Usually snapping to *other* objects is key.
+            if layer == current_layer:
+                continue
+                
+            # Check all mesh points of this layer
+            # Vectorized distance check
+            points = layer.mesh_points.reshape(-1, 2)
+            dists = np.sqrt(np.sum((points - np.array([x, y]))**2, axis=1))
+            
+            min_idx = np.argmin(dists)
+            min_dist = dists[min_idx]
+            
+            if min_dist < best_dist:
+                best_dist = min_dist
+                best_pos = points[min_idx]
+        
+        return best_pos
 
     def mouseReleaseEvent(self, event):
         self.dragged_corner_index = -1
