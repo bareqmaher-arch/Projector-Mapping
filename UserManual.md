@@ -33,10 +33,22 @@ python src/main.py
 2. Select an image or video file.
 3. The media will be added as a new layer.
 
+#### Adding Empty Surfaces
+1. Click the **Add Quad** button in the toolbar.
+2. A new empty surface (grid pattern) will be added.
+3. Use the **Assign Media** button in the Property Panel to load an image/video onto this surface later.
+
+#### Layer Grouping
+1. Select multiple layers in the **Layer Panel** (hold Ctrl/Cmd).
+2. Click the **Group** button at the bottom of the panel.
+3. The selected layers will be moved into a new Group.
+4. **Unified Media**: Check the **Span Media** box in the Property Panel to map a single media item across all layers in the group based on their screen position.
+
 #### Calibration (Mapping)
 1. Select a layer in the **Layer Panel**.
 2. **Move**: Drag the layer to position it.
-3. **Grid Warp**:
+3. **Snapping**: Toggle the **Magnet/Snap** button in the toolbar to snap mesh points to other layers' points for seamless alignment.
+4. **Grid Warp**:
    - In the **Property Panel**, adjust **Grid Size** (Rows/Cols) to add more control points.
    - Drag the yellow mesh points on the Canvas to warp the image onto curved surfaces.
 
